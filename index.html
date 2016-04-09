@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="penzhuang.js"></script>
+    <script src="index.js"></script>
+    <script>
+        window.onload=function(){
+            var canvas=document.getElementsByTagName("canvas")[0];
+            var cobj=canvas.getContext("2d");
+            var runs=document.getElementsByClassName("run");
+            var jump=document.getElementsByClassName("jump");
+            var sruns=document.getElementsByClassName("srun");
+            var sjump=document.getElementsByClassName("sjump");
+            var lruns=document.getElementsByClassName("lrun");
+            var ljump=document.getElementsByClassName("ljump");
+            var hruns=document.getElementsByClassName("hrun");
+            var hjump=document.getElementsByClassName("hjump");
+            var walk=document.getElementsByClassName("jump");
+            var hinder=document.getElementsByClassName("hinder");
+
+
+            /*function rect(){
+                this.x=0;
+                this.y=0;
+                this.width=100;
+                this.height=100;
+            }
+            rect.prototype={
+                draw:function(){
+                    cobj.save();
+                    cobj.fillRect(this.x,this.y,this.width,this.height);
+                    cobj.restore();
+                }
+            };
+            function circle(){
+                this.x=0;
+                this.y=0;
+                this.r=50;
+            }
+            circle.prototype={
+                draw:function(){
+                    cobj.save();
+                    cobj.beginPath();
+                    cobj.translate(this.x,this.y);
+                    cobj.arc(this.r,this.r,this.r,0,2*Math.PI);
+                    cobj.fill();
+                    cobj.closePath();
+                    cobj.restore();
+                }
+            };
+
+            var rectobj=new rect();
+            rectobj.x=0;
+            rectobj.y=0;
+            rectobj.draw();
+            var circleobj=new circle();
+            circleobj.x=400;
+            circleobj.y=40;
+            circleobj.draw();
+
+            setInterval(function(){
+                cobj.clearRect(0,0,500,500);
+                rectobj.x+=3;
+                rectobj.y+=0;
+                rectobj.draw();
+                circleobj.x-=3;
+                circleobj.y+=0;
+                circleobj.draw();
+                if(hitPix(canvas,cobj,circleobj,rectobj)){
+                    console.log(1)
+                }
+
+            },100)*/
+
+            var s=document.getElementsByClassName("s")[0];
+            var r=document.getElementsByClassName("r")[0];
+            var l=document.getElementsByClassName("l")[0];
+            var y=document.getElementsByClassName("y")[0];
+            var z=document.getElementsByClassName("z")[0];
+            var n=document.getElementsByClassName("n")[0];
+            var h=document.getElementsByClassName("h")[0];
+            var star=document.getElementsByClassName("star")[0];
+            var shezhi=document.getElementsByClassName("shezhi")[0];
+            var score=document.getElementsByClassName("score")[0];
+            var life=document.getElementsByClassName("life")[0];
+            var scorebox=document.getElementsByClassName("scorebox")[0];
+            var lifebox=document.getElementsByClassName("lifebox")[0];
+            var runImages,jumpImages,speedState;
+
+            shezhi.style.transform="translate(0,-200px)";
+            shezhi.style.opacity="1";
+            s.onclick=function(){
+                runImages=sruns;
+                jumpImages=sjump;
+            };
+            r.onclick=function(){
+                runImages=runs;
+                jumpImages=jump;
+            };
+            l.onclick=function(){
+                runImages=lruns;
+                jumpImages=ljump;
+            };
+            h.onclick=function(){
+                runImages=hruns;
+                jumpImages=hjump;
+            };
+            y.onclick=function(){
+                speedState="slow"
+            };
+            z.onclick=function(){
+                speedState="normal"
+            };
+            n.onclick=function(){
+
+                speedState="fast"
+            };
+            star.onclick=function(){
+                if(!runImages){
+                    runImages=runs;
+                }
+                if(!jumpImages){
+                    jumpImages=jump;
+                }
+                if(!speedState){
+                    speedState="slow";
+                }
+                var gobj=new game(canvas,cobj,runImages,jumpImages,walk,hinder,speedState,score,life);
+                shezhi.style.display="none";
+                lifebox.style.display="block";
+                scorebox.style.display="block";
+            };
+
+
+        }
+    </script>
+    <style>
+        body,ul,li{
+            margin:0;padding:0;list-style: none;
+        }
+        canvas{
+            background:url("img/bg.png") repeat-x 0 0;
+            background-size:cover;
+        }
+        .shezhi{
+           width:1200px; height:570px;padding-top: 30px;position: absolute;top:0;left:0;right:0;bottom:0;margin:auto;
+            background:url(img/shezhi.png);transform: translate(0,-800px);transition: transform 1s cubic-bezier(.22,1.77,.46,.72),opacity 1s ease;opacity: 0;
+        }
+        .left{
+            position: absolute;
+        }
+        .left:nth-child(1){
+            top:300px;left:350px;
+        }
+        .left:nth-child(2){
+            top:300px;left:650px;
+        }
+        .left:nth-child(3){
+            top:450px;left:480px;
+        }
+        .slee{
+            display: block;width:216px;height:30px;text-align: center;line-height: 30px;font-size: 25px;font-weight: bold;
+            color:#eee;background:#0088cc;border-radius: 20px 20px 0 0 ;
+        }
+        .left li{
+            float: left;border:1px solid #c8e5bc;cursor: pointer;width:70px;height:120px;text-align: center;line-height: 120px;
+            font-size: 30px;
+        }
+        .left li:hover{
+            background:#0088cc;color:#eee;
+        }
+        .left li img{
+            width:70px;height:120px;
+        }
+        .star{
+            display: block;border:2px solid #fa0;border-radius: 20px;font-size: 30px;padding:15px ;margin: 30px;cursor: pointer;
+        }
+        .star:hover{
+            background: #fa0;color:#eee;
+        }
+        .lifebox{
+            position: absolute;top:100px;left:300px;width:200px;height:50px;border-radius: 20px;
+            background: radial-gradient(green,#0ff);color:#eee;text-align: center;line-height: 50px;font-size: 30px;display: none;
+        }
+        .scorebox{
+            position: absolute;top:100px;left:600px;width:200px;height:50px;border-radius: 20px;
+            background:radial-gradient(green,#0ff);color:#eee;text-align: center;line-height: 50px;font-size: 30px;display: none;
+        }
+    </style>
+</head>
+<body>
+<canvas width="1920" height="800"></canvas>
+<div class="shezhi">
+    <ul>
+        <li class="left">
+            <span class="slee">请选择人物</span>
+            <ul>
+                <li class="s"><img src="img/srun1.png" alt=""></li>
+                <li class="r"><img src="img/run1.png" alt=""></li>
+                <!--<li class="l"><img src="img/lrun1.png" alt=""></li>-->
+                <li class="h"><img src="img/hrun2.png" alt=""></li>
+            </ul>
+        </li>
+        <li class="left">
+            <span class="slee">请选择级别</span>
+            <ul>
+                <li class="y">容易</li>
+                <li class="z">中等</li>
+                <li class="n">困难</li>
+            </ul>
+        </li>
+        <li class="left">
+            <span class="star">请开始游戏</span>
+        </li>
+    </ul>
+</div>
+<div class="scorebox">分数：<span class="score">0</span></div>
+<div class="lifebox">生命：<span class="life">10</span></div>
+<img src="img/run1.png" alt="" hidden class="run">
+<img src="img/run2.png" alt="" hidden class="run">
+<img src="img/run3.png" alt="" hidden class="run">
+<img src="img/run4.png" alt="" hidden class="run">
+<img src="img/run2.png" alt="" hidden class="jump">
+
+<img src="img/srun1.png" alt="" hidden class="srun">
+<img src="img/srun2.png" alt="" hidden class="srun">
+<img src="img/srun3.png" alt="" hidden class="srun">
+<img src="img/srun4.png" alt="" hidden class="srun">
+<img src="img/srun1.png" alt="" hidden class="sjump">
+
+
+<img src="img/lrun1.png" alt="" hidden class="lrun">
+<img src="img/lrun2.png" alt="" hidden class="lrun">
+<img src="img/lrun3.png" alt="" hidden class="lrun">
+<img src="img/lrun4.png" alt="" hidden class="lrun">
+<img src="img/lrun2.png" alt="" hidden class="ljump">
+
+<img src="img/hrun1.png" alt="" hidden class="hrun">
+<img src="img/hrun2.png" alt="" hidden class="hrun">
+<img src="img/hrun3.png" alt="" hidden class="hrun">
+<img src="img/hrun4.png" alt="" hidden class="hrun">
+<img src="img/hrun3.png" alt="" hidden class="hjump">
+
+<img src="img/xiong.png" alt="" hidden class="hinder">
+<img src="img/hinder1.png" alt="" hidden class="hinder">
+<img src="img/hinder2.png" alt="" hidden class="hinder">
+<img src="img/hinder3.png" alt="" hidden class="hinder">
+<img src="img/hinder4.png" alt="" hidden class="hinder">
+<img src="img/hinder5.png" alt="" hidden class="hinder">
+<img src="img/hinder6.png" alt="" hidden class="hinder">
+<img src="img/hinder7.png" alt="" hidden class="hinder">
+<img src="img/hinder8.png" alt="" hidden class="hinder">
+</body>
+</html>
